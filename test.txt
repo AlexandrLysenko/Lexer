@@ -1,0 +1,10 @@
+PROGRAM SIG1; 
+BEGIN 
+VAR L = 13;			
+THEN VARIABLE < 65;
+d
+ 	
+(*comment*))
+(*unclosed comment*
+
+
