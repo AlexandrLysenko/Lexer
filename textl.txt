@@ -1,0 +1,18 @@
+123123 PRO(**
+
+*)GRAM(*
+
+**) SIG1(***);
+BEGIN
+VA
+
+
+R L = 13(**)ABS 123FHD;
+THEN VAR;IAB:LE < 65
+;
+d
+
+(*comment*))
+(*unclosed comment*
+
+*)

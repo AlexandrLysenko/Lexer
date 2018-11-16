@@ -35,7 +35,7 @@ class Analizer {
   resolveCategory(code) {
     if( code >= 65 && code <= 90) return this.symbolCategory.LETTER
     if( code >= 48 && code <= 57) return this.symbolCategory.DIGIT
-    if( code == 58 || code == 59 || code == 61 || code == 46 || code == 44)
+    if( code == 58 || code == 59 || code == 60 || code == 46 || code == 61 || code == 44)
      return this.symbolCategory.DELIMITER
     if( code >= 8 && code <= 14) return this.symbolCategory.WHITESPACE
     if( code == 32 ) return this.symbolCategory.WHITESPACE
@@ -47,7 +47,9 @@ class Analizer {
     this.position = 0;
     this.fileData = this.getFileData(filePath)
     let currentSymbol;
-    while (!(currentSymbol = this.getNextCharacter()).isEOF()) {
+    beginning: while (!(currentSymbol = this.getNextCharacter()).isEOF()) {
+
+
       if (currentSymbol.getCategory() === this.symbolCategory.LETTER) {
         let token = '';
         token += currentSymbol.getCharacter()
@@ -80,26 +82,42 @@ class Analizer {
         var tokenLineNumber = this.lineNumber;
         var tokenPosition = this.position;
         do {
+          var error = false;
           currentSymbol = this.getNextCharacter()
           if (currentSymbol.getCategory() === this.symbolCategory.DIGIT ) {
             token += currentSymbol.getCharacter()
+          } else if(currentSymbol.getCategory() === this.symbolCategory.LETTER)  {
+            do {
+              currentSymbol = this.getNextCharacter()
+              if (currentSymbol.getCategory() === this.symbolCategory.LETTER || currentSymbol.getCategory() === this.symbolCategory.DIGIT) {
+                token += currentSymbol.getCharacter()
+              }
+            } while (currentSymbol.getCategory() === this.symbolCategory.LETTER || currentSymbol.getCategory() === this.symbolCategory.DIGIT);
+            error = true;
+            this.errors.push(
+              this.invalidLetterError(tokenPosition, tokenLineNumber, token, filePath)
+            )
           }
 
         } while (currentSymbol.getCategory() === this.symbolCategory.DIGIT );
-        let number = this.numbersTable.addNumber(
-          new Number(token, this.numbersTable.getCodeForNumber(token))
-        )
-        this.tokens.push(
-          new Token(number.getCode(), number.getValue(), tokenLineNumber, tokenPosition)
-        )
+        if (!error) {
+          let number = this.numbersTable.addNumber(
+            new Number(token, this.numbersTable.getCodeForNumber(token))
+          )
+          this.tokens.push(
+            new Token(number.getCode(), number.getValue(), tokenLineNumber, tokenPosition)
+          )
+        }
       }
 
       if (currentSymbol.getCategory() === this.symbolCategory.COMMENT_BEGIN) {
         let commentLineNumber = this.lineNumber;
         let commentPosition = this.position;
+        let end = false;
         var nextSymbol = this.getNextCharacter();
         if (nextSymbol.getCharacter() === '*') {
           do {
+
             currentSymbol = this.getNextCharacter();
             if (currentSymbol.getCharacter() === '*') {
 
@@ -107,8 +125,7 @@ class Analizer {
                 nextSymbol = this.getNextCharacter();
               } while (nextSymbol.getCharacter() === '*');
               if (nextSymbol.getCharacter() === ')') {
-                currentSymbol = this.getNextCharacter()
-                break;
+                continue beginning;
               } else if (nextSymbol.getCharacter() === null) {
                 this.errors.push(
                   this.unclosedCommentError(commentPosition, commentLineNumber, filePath)
@@ -117,6 +134,7 @@ class Analizer {
               }
 
             } else if (currentSymbol.getCharacter() == null) {
+              console.log('default error')
               this.errors.push(
                 this.unclosedCommentError(commentPosition, commentLineNumber, filePath)
               );
@@ -138,14 +156,18 @@ class Analizer {
           new Token(currentSymbol.getCharacter().charCodeAt(0),
           currentSymbol.getCharacter(), this.lineNumber, this.position));
         continue;
-      } else if(currentSymbol.getCharacter() != null) {
+      }
+      console.log(currentSymbol)
+       if(currentSymbol.getCharacter() != null) {
         this.errors.push(
           this.unexpectedSymbolError(currentSymbol,
              this.position, this.lineNumber, filePath)
            )
+           console.log('default error erer')
       }
     }
   }
+
 
 
   getNextCharacter(position) {
@@ -153,13 +175,13 @@ class Analizer {
     let prevLineNumber = this.lineNumber;
     let prevPosition = this.position;
     if(this.fileData[this.index]) {
-      if (this.fileData[this.index].charCodeAt(0) == 13 ) {
+      if (this.fileData[this.index].charCodeAt(0) == 10 ) {
         this.lineNumber++;
-        this.position = -1;
-      } else if (this.fileData[this.index].charCodeAt(0) == 10) {
-        this.position--;
+        this.position = 0;
+      } else {
+          this.position++;
         }
-        this.position++;
+
       }
     this.index++;
     if (this.index <= this.fileData.length) {
@@ -175,6 +197,10 @@ class Analizer {
     console.log("---------END Tokens Table----------");
     // this.keywordsTable.getAllTable();
     // console.table(this.identifiersTable.getIdentifiers());
+  }
+
+  invalidLetterError(position, lineNumber, token, filePath) {
+    return `Lexer: Error (${lineNumber}, ${position}):Invalid digit '${token}' in ${filePath}`;
   }
 
   unclosedCommentError(commentPosition, commentLineNumber, filePath) {
@@ -198,6 +224,7 @@ class Analizer {
       console.log("\n************END ERRORS*************\n\n");
     }
   }
+
 }
 
 
@@ -205,7 +232,7 @@ class Analizer {
 
 parser = new Analizer()
 parser.getIdentifiers()
-parser.parseFile('./test1.txt');
+parser.parseFile('./textl.txt');
 parser.getTokens()
 parser.getErrors()
 // console.log(SymbolCategory.WHITESPACE);
