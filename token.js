@@ -4,7 +4,22 @@ module.exports = class Token {
     this.value = value;
     this.lineNumber = lineNumber;
     this.position = position;
-    this.error = error
+  }
+
+  getCode() {
+    return this.code;
+  }
+
+  getValue() {
+    return this.value;
+  }
+
+  getLineNumber() {
+    return this.lineNumber;
+  }
+
+  getPosition() {
+    return this.position;
   }
 
   getInfo() {

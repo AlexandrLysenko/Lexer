@@ -1,10 +1,8 @@
-PROGRAM SIG1; 
+PROGRAM TEST1;
+LABEL 123123, 123123, 123123;
 BEGIN 
-VAR L = 13;			
-THEN VARIABLE < 65;
-d
- 	
-(*comment*))
-(*unclosed comment*
-
-
+	IF VAR1 = 2 
+	THEN GOTO 123;
+	ELSE 12312: GOTO 123;
+	ENDIF; 
+END.

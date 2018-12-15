@@ -3,6 +3,7 @@ class IdentifiersTable {
   constructor() {
     this.identifiersList = [];
     this.identifierCodeStart = 1000;
+    const CODE_START = 1000;
   }
 
   getIdentifiers() {

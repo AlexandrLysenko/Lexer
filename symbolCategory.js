@@ -4,5 +4,6 @@ module.exports = SymbolCategory = {
   LETTER: 3,
   DELIMITER: 4,
   COMMENT_BEGIN: 5,
-  ERROR: 6
+  ERROR: 6,
+  TASK: 7
 }

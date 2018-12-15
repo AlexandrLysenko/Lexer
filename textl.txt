@@ -1,18 +1,24 @@
-123123 PRO(**
+PROGRAM SIG1;
+BLOCK.
+SIG1(*wefwefw**** wef*);
+
+123123 PRO(**s
 
 *)GRAM(*
 
-**) SIG1(***);
+**) SIG1(*wefwefw**** wef*);
 BEGIN
-VA
+VA ASD
+...;;:(*()()()*);;:=:=:::=;;:.
 
-
-R L = 13(**)ABS 123FHD;
+R L = 13(**)ABS 123(* * **)FHD;
 THEN VAR;IAB:LE < 65
 ;
-d
+65
+#KHW324###58764@###FKPO#H12#
+ASD
 
-(*comment*))
+(*comment*)
 (*unclosed comment*
 
 *)
