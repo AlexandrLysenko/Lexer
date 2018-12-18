@@ -44,7 +44,9 @@ class Parser {
   parseIdentifier(treeNode) {
     let token = this.getNextToken();
     if(token.getCode() < identifiersTable.CODE_START) {
+      parser.printTree(parser.tree)
       throw this.parsingErrorMessage(token, 'identifier');
+
     }
     treeNode = treeNode.newNode('<identifier>');
     treeNode.addValue(this.tokenToString(token))
@@ -111,9 +113,18 @@ class Parser {
         treeNode = treeNode.newNode('<statement>');
         this.parseTokenByCode(treeNode, Delimiters.SEMICOLON, 'semicolon')
         return true;
-    } else {
-      return false;
-    }
+    } else if(token.getCode() > 1000) {
+        treeNode = treeNode.newNode('<assign>');
+        this.parseAssign(treeNode)
+        return true;
+    } else false;
+  }
+
+  parseAssign(treeNode) {
+    this.parseIdentifier(treeNode);
+    this.parseTokenByCode(treeNode, Delimiters.EQUAL, '=');
+    this.parseUnsignedInteger(treeNode);
+    this.parseTokenByCode(treeNode, Delimiters.SEMICOLON, 'semicolon');
   }
 
   parseConditionStatement(treeNode) {
@@ -130,7 +141,6 @@ class Parser {
     this.parseStatementsList(treeNode);
   }
   parseConditionalExpression(treeNode) {
-    treeNode = treeNode.newNode('<conditional-expression>')
     this.parseVariableIdentifier(treeNode);
     this.parseTokenByCode(treeNode, Delimiters.EQUAL, 'keyword IF');
     this.parseUnsignedInteger(treeNode);
@@ -138,13 +148,13 @@ class Parser {
 
   parseAlternativePart(treeNode) {
     let token = this.getNextToken();
-    treeNode = treeNode.newNode('<alternative-part>')
-    this.alreadyParsedToken = token;
     if (token.getCode() == Keywords.ELSE) {
+      treeNode = treeNode.newNode('<alternative-part>')
+      this.alreadyParsedToken = token;
       this.parseTokenByCode(treeNode, Keywords.ELSE, 'keyword ELSE');
       this.parseStatementsList(treeNode);
     } else {
-      // this.alreadyParsedToken = token;
+      this.alreadyParsedToken = token;
       treeNode.newNode('<empty>');
 
     }
@@ -168,6 +178,7 @@ class Parser {
   parseUnsignedInteger(treeNode) {
     var token = this.getNextToken();
     if (token.getCode() < 500 || token.getCode() > 1000) {
+      parser.printTree(parser.tree)
       throw this.parsingErrorMessage(token, 'unsigned-integer')
     }
     treeNode = treeNode.newNode('<unsigned-integer>');
@@ -186,6 +197,7 @@ class Parser {
     }
     let token = this.tokens[this.currentIndex++] || null;
     if (token === null) {
+      parser.printTree(parser.tree)
       throw "Parser error: unexpected end of file";
     }
     return token;
@@ -197,6 +209,7 @@ class Parser {
     if (token.getCode() === tokenCode) {
       treeNode.newNode(this.tokenToString(token))
     } else {
+      parser.printTree(parser.tree)
       throw this.parsingErrorMessage(token, expectedToken);
     }
   }
